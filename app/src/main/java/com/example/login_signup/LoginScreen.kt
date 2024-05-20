@@ -1,6 +1,7 @@
 package com.example.login_signup
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,13 +30,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.login_signup.ui.theme.Black
 import com.example.login_signup.ui.theme.BlueGray
-import com.example.login_signup.ui.theme.LoginTextField
+import com.example.login_signup.ui.theme.EmailTextField
+import com.example.login_signup.ui.theme.PasswordTextField
 import com.example.login_signup.ui.theme.Roboto
+import com.example.login_signup.util.Routes
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavController) {
     Surface {
         Column(modifier = Modifier.fillMaxSize()) {
 
@@ -54,41 +58,53 @@ fun LoginScreen() {
 
                 GoogleLoginSection()
 
-                val uiColor = if (isSystemInDarkTheme()) Color.White else Black
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight(0.8f)
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    Text(text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                color = Color(0xFF94A3B8),
-                                fontSize = 14.sp,
-                                fontFamily = Roboto,
-                                fontWeight = FontWeight.Normal
-                            )
-                        ) {
-                            append("Don't have account?")
-                        }
-
-                        withStyle(
-                            style = SpanStyle(
-                                color = uiColor,
-                                fontSize = 14.sp,
-                                fontFamily = Roboto,
-                                fontWeight = FontWeight.Normal
-                            )
-                        ) {
-                            append(" ")
-                            append("Create now!")
-                        }
-                    })
-                }
+                CreateAccountSection(navController)
             }
 
         }
+    }
+}
+
+@Composable
+private fun CreateAccountSection(navController: NavController) {
+    val uiColor = if (isSystemInDarkTheme()) Color.White else Black
+    Box(
+        modifier = Modifier
+            .fillMaxHeight(0.8f)
+            .fillMaxWidth()
+            .clickable {
+                navController.navigate(Routes.SIGNUP_SCREEN) {
+                    popUpTo(Routes.LOGIN_SCREEN) {
+                        inclusive = true
+                    }
+                }
+            },
+        contentAlignment = Alignment.BottomCenter,
+    ) {
+        Text(text = buildAnnotatedString {
+            withStyle(
+                style = SpanStyle(
+                    color = Color(0xFF94A3B8),
+                    fontSize = 14.sp,
+                    fontFamily = Roboto,
+                    fontWeight = FontWeight.Normal
+                )
+            ) {
+                append("Don't have account?")
+            }
+
+            withStyle(
+                style = SpanStyle(
+                    color = uiColor,
+                    fontSize = 14.sp,
+                    fontFamily = Roboto,
+                    fontWeight = FontWeight.Normal
+                )
+            ) {
+                append(" ")
+                append("Create now!")
+            }
+        })
     }
 }
 
@@ -115,14 +131,14 @@ private fun GoogleLoginSection() {
 
 @Composable
 private fun LoginSection() {
-    LoginTextField(
+    EmailTextField(
         label = "Email",
         modifier = Modifier.fillMaxWidth()
     )
 
     Spacer(modifier = Modifier.height(15.dp))
 
-    LoginTextField(
+    PasswordTextField(
         label = "Password",
         modifier = Modifier.fillMaxWidth()
     )
