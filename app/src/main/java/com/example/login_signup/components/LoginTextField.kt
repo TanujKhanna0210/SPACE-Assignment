@@ -1,4 +1,4 @@
-package com.example.login_signup.ui.theme
+package com.example.login_signup.components
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,6 +22,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.example.login_signup.R
+import com.example.login_signup.ui.theme.Black
+import com.example.login_signup.ui.theme.focusedTextFieldText
+import com.example.login_signup.ui.theme.textFieldContainer
+import com.example.login_signup.ui.theme.unfocusedTextFieldText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

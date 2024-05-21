@@ -1,4 +1,4 @@
-package com.example.login_signup
+package com.example.login_signup.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -32,19 +32,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.login_signup.data.SignupUIEvent
-import com.example.login_signup.data.SignupViewModel
+import com.example.login_signup.R
+import com.example.login_signup.components.EmailTextField
+import com.example.login_signup.components.GoogleLogin
+import com.example.login_signup.components.PasswordTextField
+import com.example.login_signup.data.LoginUIEvent
+import com.example.login_signup.data.LoginViewModel
+import com.example.login_signup.google_signin.SignInState
 import com.example.login_signup.ui.theme.Black
 import com.example.login_signup.ui.theme.BlueGray
-import com.example.login_signup.ui.theme.EmailTextField
-import com.example.login_signup.ui.theme.PasswordTextField
 import com.example.login_signup.ui.theme.Roboto
 import com.example.login_signup.util.Routes
 
 @Composable
-fun SignupScreen(
+fun LoginScreen(
+    state: SignInState,
+    onSignInClick: () -> Unit,
     navController: NavController,
-    signupViewModel: SignupViewModel = viewModel()
+    loginViewModel: LoginViewModel = viewModel()
+
 ) {
     Surface {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -58,20 +64,23 @@ fun SignupScreen(
                     .fillMaxSize()
                     .padding(horizontal = 30.dp)
             ) {
-                SignupSection(
-                    signupViewModel,
+                LoginSection(
+                    loginViewModel,
                     onButtonClicked = {
-                        signupViewModel.onEvent(SignupUIEvent.SignupButtonClicked, navController)
+                        loginViewModel.onEvent(
+                            LoginUIEvent.LoginButtonClicked,
+                            navController
+                        )
                     },
-                    isButtonEnabled = signupViewModel.allValidationsPassed.value,
+                    isButtonEnabled = loginViewModel.allValidationsPassed.value,
                     navController = navController
                 )
 
                 Spacer(modifier = Modifier.height(30.dp))
 
-                GoogleSignupSection()
+                GoogleLoginSection(state, onSignInClick)
 
-                AlreadyHaveAccountSection(navController)
+                CreateAccountSection(navController)
             }
 
         }
@@ -79,15 +88,15 @@ fun SignupScreen(
 }
 
 @Composable
-private fun AlreadyHaveAccountSection(navController: NavController) {
+private fun CreateAccountSection(navController: NavController) {
     val uiColor = if (isSystemInDarkTheme()) Color.White else Black
     Box(
         modifier = Modifier
             .fillMaxHeight(0.8f)
             .fillMaxWidth()
             .clickable {
-                navController.navigate(Routes.LOGIN_SCREEN) {
-                    popUpTo(Routes.SIGNUP_SCREEN) {
+                navController.navigate(Routes.SIGNUP_SCREEN) {
+                    popUpTo(Routes.LOGIN_SCREEN) {
                         inclusive = true
                     }
                 }
@@ -103,7 +112,7 @@ private fun AlreadyHaveAccountSection(navController: NavController) {
                     fontWeight = FontWeight.Normal
                 )
             ) {
-                append("Already have account?")
+                append("Don't have account?")
             }
 
             withStyle(
@@ -115,14 +124,14 @@ private fun AlreadyHaveAccountSection(navController: NavController) {
                 )
             ) {
                 append(" ")
-                append("Login!")
+                append("Create now!")
             }
         })
     }
 }
 
 @Composable
-private fun GoogleSignupSection() {
+private fun GoogleLoginSection(state: SignInState, onSignInClick: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -136,15 +145,15 @@ private fun GoogleSignupSection() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        GoogleLogin(icon = R.drawable.google, text = "Google") {
-
-        }
+        GoogleLogin(icon = R.drawable.google, text = "Google", state = state, onSignInClick = {
+            onSignInClick
+        })
     }
 }
 
 @Composable
-private fun SignupSection(
-    signupViewModel: SignupViewModel,
+private fun LoginSection(
+    loginViewModel: LoginViewModel,
     onButtonClicked: () -> Unit,
     isButtonEnabled: Boolean = false,
     navController: NavController
@@ -153,10 +162,12 @@ private fun SignupSection(
         label = "Email",
         modifier = Modifier.fillMaxWidth(),
         onTextSelected = {
-            signupViewModel.onEvent(SignupUIEvent.EmailChanged(it),
-                navController = navController)
+            loginViewModel.onEvent(
+                LoginUIEvent.EmailChanged(it),
+                navController = navController
+            )
         },
-        errorStatus = signupViewModel.registrationUIState.value.emailError
+        errorStatus = loginViewModel.loginUIState.value.emailError
     )
 
     Spacer(modifier = Modifier.height(15.dp))
@@ -165,10 +176,12 @@ private fun SignupSection(
         label = "Password",
         modifier = Modifier.fillMaxWidth(),
         onTextSelected = {
-            signupViewModel.onEvent(SignupUIEvent.PasswordChanged(it),
-                navController = navController)
+            loginViewModel.onEvent(
+                LoginUIEvent.PasswordChanged(it),
+                navController = navController
+            )
         },
-        errorStatus = signupViewModel.registrationUIState.value.passwordError
+        errorStatus = loginViewModel.loginUIState.value.passwordError
     )
 
     Spacer(modifier = Modifier.height(20.dp))
@@ -177,9 +190,7 @@ private fun SignupSection(
         modifier = Modifier
             .fillMaxWidth()
             .height(40.dp),
-        onClick = {
-            onButtonClicked.invoke()
-        },
+        onClick = { onButtonClicked.invoke() },
         colors = ButtonDefaults.buttonColors(
             containerColor = if (isSystemInDarkTheme()) BlueGray else Black,
             contentColor = Color.White
@@ -187,7 +198,7 @@ private fun SignupSection(
         enabled = isButtonEnabled
     ) {
         Text(
-            text = "Sign up",
+            text = "Log in",
             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium)
         )
     }
@@ -229,7 +240,7 @@ private fun TopSection() {
             modifier = Modifier
                 .padding(bottom = 10.dp)
                 .align(alignment = Alignment.BottomCenter),
-            text = stringResource(id = R.string.signup),
+            text = stringResource(id = R.string.login),
             style = MaterialTheme.typography.headlineLarge,
             color = uiColor
         )

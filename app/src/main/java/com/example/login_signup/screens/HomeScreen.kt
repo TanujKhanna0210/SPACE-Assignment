@@ -1,4 +1,4 @@
-package com.example.login_signup
+package com.example.login_signup.screens
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box

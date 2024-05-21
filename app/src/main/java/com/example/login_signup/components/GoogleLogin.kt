@@ -1,4 +1,4 @@
-package com.example.login_signup
+package com.example.login_signup.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.login_signup.google_signin.SignInState
 import com.example.login_signup.ui.theme.BlueGray
 import com.example.login_signup.ui.theme.LightBlueWhite
 
@@ -32,14 +33,15 @@ fun GoogleLogin(
     modifier: Modifier = Modifier,
     @DrawableRes icon: Int,
     text: String,
-    onClick: () -> Unit
+    state: SignInState,
+    onSignInClick: () -> Unit
 ) {
 
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
             .googleButton()
-            .clickable { onClick() }
+            .clickable { onSignInClick() }
             .height(40.dp)
             .fillMaxWidth(.4f),
         horizontalArrangement = Arrangement.Center,

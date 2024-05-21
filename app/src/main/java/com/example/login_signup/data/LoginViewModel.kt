@@ -1,4 +1,4 @@
-package com.example.login_signup
+package com.example.login_signup.data
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
