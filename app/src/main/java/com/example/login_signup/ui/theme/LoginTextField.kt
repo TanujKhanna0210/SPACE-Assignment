@@ -27,7 +27,9 @@ import com.example.login_signup.R
 @Composable
 fun EmailTextField(
     modifier: Modifier = Modifier,
-    label: String
+    label: String,
+    onTextSelected: (String) -> Unit,
+    errorStatus: Boolean = false
 ) {
     val uiColor = if (isSystemInDarkTheme()) Color.White else Black
     val text = remember {
@@ -39,6 +41,7 @@ fun EmailTextField(
         value = text.value,
         onValueChange = {
             text.value = it
+            onTextSelected(it)
         },
         keyboardOptions = KeyboardOptions.Default,
         label = {
@@ -53,7 +56,8 @@ fun EmailTextField(
             focusedLabelColor = MaterialTheme.colorScheme.focusedTextFieldText,
             unfocusedBorderColor = MaterialTheme.colorScheme.textFieldContainer,
             focusedBorderColor = MaterialTheme.colorScheme.textFieldContainer
-        )
+        ),
+        isError = !errorStatus
     )
 }
 
@@ -61,7 +65,9 @@ fun EmailTextField(
 @Composable
 fun PasswordTextField(
     modifier: Modifier = Modifier,
-    label: String
+    label: String,
+    onTextSelected: (String) -> Unit,
+    errorStatus: Boolean = false
 ) {
     val uiColor = if (isSystemInDarkTheme()) Color.White else Black
     val password = remember {
@@ -77,6 +83,7 @@ fun PasswordTextField(
         value = password.value,
         onValueChange = {
             password.value = it
+            onTextSelected(it)
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         label = {
@@ -104,6 +111,7 @@ fun PasswordTextField(
                 Icon(imageVector = iconImage, contentDescription = description)
             }
         },
-        visualTransformation = if (isPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation()
+        visualTransformation = if (isPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+        isError = !errorStatus
     )
 }

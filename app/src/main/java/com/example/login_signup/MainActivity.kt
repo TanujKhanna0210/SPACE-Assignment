@@ -37,6 +37,9 @@ fun AppNavigation(activity: Activity) {
         composable(Routes.SIGNUP_SCREEN) {
             SignupScreen(navController)
         }
+        composable(Routes.HOME_SCREEN) {
+            HomeScreen(navController)
+        }
     }
 
 }

@@ -30,7 +30,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.login_signup.data.LoginUIEvent
 import com.example.login_signup.ui.theme.Black
 import com.example.login_signup.ui.theme.BlueGray
 import com.example.login_signup.ui.theme.EmailTextField
@@ -39,7 +41,11 @@ import com.example.login_signup.ui.theme.Roboto
 import com.example.login_signup.util.Routes
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(
+    navController: NavController,
+    loginViewModel: LoginViewModel = viewModel()
+
+) {
     Surface {
         Column(modifier = Modifier.fillMaxSize()) {
 
@@ -52,7 +58,17 @@ fun LoginScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(horizontal = 30.dp)
             ) {
-                LoginSection()
+                LoginSection(
+                    loginViewModel,
+                    onButtonClicked = {
+                        loginViewModel.onEvent(
+                            LoginUIEvent.LoginButtonClicked,
+                            navController
+                        )
+                    },
+                    isButtonEnabled = loginViewModel.allValidationsPassed.value,
+                    navController = navController
+                )
 
                 Spacer(modifier = Modifier.height(30.dp))
 
@@ -130,17 +146,36 @@ private fun GoogleLoginSection() {
 }
 
 @Composable
-private fun LoginSection() {
+private fun LoginSection(
+    loginViewModel: LoginViewModel,
+    onButtonClicked: () -> Unit,
+    isButtonEnabled: Boolean = false,
+    navController: NavController
+) {
     EmailTextField(
         label = "Email",
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        onTextSelected = {
+            loginViewModel.onEvent(
+                LoginUIEvent.EmailChanged(it),
+                navController = navController
+            )
+        },
+        errorStatus = loginViewModel.loginUIState.value.emailError
     )
 
     Spacer(modifier = Modifier.height(15.dp))
 
     PasswordTextField(
         label = "Password",
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        onTextSelected = {
+            loginViewModel.onEvent(
+                LoginUIEvent.PasswordChanged(it),
+                navController = navController
+            )
+        },
+        errorStatus = loginViewModel.loginUIState.value.passwordError
     )
 
     Spacer(modifier = Modifier.height(20.dp))
@@ -149,11 +184,12 @@ private fun LoginSection() {
         modifier = Modifier
             .fillMaxWidth()
             .height(40.dp),
-        onClick = { /*TODO*/ },
+        onClick = { onButtonClicked.invoke() },
         colors = ButtonDefaults.buttonColors(
             containerColor = if (isSystemInDarkTheme()) BlueGray else Black,
             contentColor = Color.White
-        )
+        ),
+        enabled = isButtonEnabled
     ) {
         Text(
             text = "Log in",
